@@ -59,10 +59,9 @@ rank_map = generate_mers_rank_map(dna_alphabet, K)
 counts_by_name = dict()
 
 for fn in sys.argv[1:]:
-    for rec in SeqIO.parse(open(sys.argv[1]), "fasta"):
+    for rec in SeqIO.parse(open(fn), "fasta"):
         fwd_name = rec.name + ".fwd"
         rc_name = rec.name + ".rc"
-        
         
         counts_by_name[fwd_name] = [0] * (4 ** K)
         counts_by_name[rc_name] = [0] * (4 ** K)

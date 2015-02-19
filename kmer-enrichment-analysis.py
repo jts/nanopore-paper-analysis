@@ -68,6 +68,9 @@ for fn in sys.argv[1:]:
         
         for ki in xrange(0, len(rec.seq) - K + 1):
             kmer = rec.seq[ki:ki+K]
+            
+            if 'n' in kmer or 'N' in kmer:
+                continue
 
             fwd_rank = rank_map[str(kmer)]
             rc_rank = rank_map[revcomp(str(kmer))]

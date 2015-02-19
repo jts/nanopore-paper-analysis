@@ -69,8 +69,8 @@ for fn in sys.argv[1:]:
         for ki in xrange(0, len(rec.seq) - K + 1):
             kmer = rec.seq[ki:ki+K]
 
-            fwd_rank = rank_map[kmer]
-            rc_rank = rank_map[revcomp(kmer)]
+            fwd_rank = rank_map[str(kmer)]
+            rc_rank = rank_map[revcomp(str(kmer))]
 
             counts_by_name[fwd_name][fwd_rank] += 1
             counts_by_name[rc_name][rc_rank] += 1

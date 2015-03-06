@@ -30,38 +30,54 @@ plot_count_correlation <- function(filename) {
     require(ggplot2)
     require(reshape2)
 
-    data <- read.table("kmer.results.txt", header=T)
+    data <- read.table(filename, header=T)
 
     # rename columns to refer to reference and assembly
-    names(data)[names(data) == "gi.556503834.ref.NC_000913.3..fwd"] <- "reference"
-    names(data)[names(data) == "X1.fwd"] <- "assembly"
+    names(data)[names(data) == "reference.fa.gi.556503834.ref.NC_000913.3..fwd"] <- "reference"
+    names(data)[names(data) == "circular.fasta.1.fwd"] <- "draft"
+    names(data)[names(data) == "circular_polished.fa.1.fwd"] <- "polished"
+    print(head(data))
     
     # reorder by reference count descending
     data$kmer = reorder(data$kmer, -data$reference)
     
-    # Extract cases where the reference and assembly count differ by more than a factor
+    # Extract cases where the reference and draft assembly count differ by more than a factor
     F = 1.5
     w = 0.5 # width of bars
 
-    data$description = ifelse(data$reference / data$assembly > F, "outlier", "normal") 
+    data$description = ifelse(data$reference / data$draft > F, "outlier", "normal") 
     data$kmer_label = ifelse(data$description == "outlier", data$kmer, "") 
  
-    print(cor(data$reference, data$assembly))
-       
-    p1 <- ggplot(data, aes(reference, assembly)) + 
+    print(cor(data$reference, data$draft))
+    print(cor(data$reference, data$polished))
+   
+    #
+    # Draft assembly plots
+    #
+    p1 <- ggplot(data, aes(reference, draft)) + 
           geom_point(aes(color=description)) +
           #geom_text(aes(label=kmer_label)) +
           scale_colour_manual(values=c("black", "red"), guide=FALSE) + 
           xlab("5-mer count in reference") + 
-          ylab("5-mer count in assembly")
+          ylab("5-mer count in draft assembly")
     
     # Over represented in reference
     outliers = subset(data, description == "outlier")
 
-    m <- melt(outliers[,c('kmer', 'assembly', 'reference')], id.vars=1)
-    p2 <- ggplot(m, aes(kmer, value)) + geom_bar(aes(fill=variable), width = w, position = position_dodge(width = w), stat="identity") + ylab("count")
-    
-    pdf("~/Desktop/figure_kmer_counts.pdf", 16, 8)
-    multiplot(p1, p2, cols=2)
+    md <- melt(outliers[,c('kmer', 'draft', 'reference')], id.vars=1)
+    p2 <- ggplot(md, aes(kmer, value)) + geom_bar(aes(fill=variable), width = w, position = position_dodge(width = w), stat="identity") + ylab("count")
+   
+    p3 <- ggplot(data, aes(reference, polished)) + 
+          geom_point(aes(color=description)) +
+          #geom_text(aes(label=kmer_label)) +
+          scale_colour_manual(values=c("black", "red"), guide=FALSE) + 
+          xlab("5-mer count in reference") + 
+          ylab("5-mer count in polished assembly")
+
+    mp <- melt(outliers[,c('kmer', 'polished', 'reference')], id.vars=1)
+    p4 <- ggplot(mp, aes(kmer, value)) + geom_bar(aes(fill=variable), width = w, position = position_dodge(width = w), stat="identity") + ylab("count")
+
+    pdf("figure_kmer_counts.pdf", 16, 16)
+    multiplot(p1, p2, p3, p4, cols=2, rows=2)
     dev.off()   
 }

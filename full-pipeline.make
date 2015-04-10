@@ -5,8 +5,7 @@ all: poretools.version \
      daligner.version \
      poa.version \
      dazz_db.version \
-     samtools.version \
-     pythonlibs.version
+     samtools.version
 
 # These programs need to be a on the PATH for everything to work
 export PATH := ./DAZZ_DB:./DALIGNER:./nanocorrect:./poaV2:$(PATH)

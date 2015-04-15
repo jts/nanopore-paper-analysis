@@ -140,7 +140,7 @@ raw.reads.fasta: ERX708228.fast5 ERX708229.fast5 ERX708230.fast5 ERX708231.fast5
 	poretools fasta --type 2D ERX708231.fast5/ >> $@
 
 # Run nanocorrect in parallel
-%.corrected.fasta: %.fasta samtools.version pythonlibs.version nanocorrect.version daligner.version dazz_db.version
+%.corrected.fasta: %.fasta samtools.version pythonlibs.version nanocorrect.version daligner.version dazz_db.version poa.version
 	make -f nanocorrect/nanocorrect-overlap.make INPUT=$< NAME=$*
 	samtools faidx $<
 	python nanocorrect/makerange.py $< | parallel --progress -P $(NC_PROCESS) 'python nanocorrect/nanocorrect.py $* {} > $*.{}.corrected.fasta'

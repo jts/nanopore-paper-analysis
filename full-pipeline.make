@@ -199,6 +199,7 @@ reads_to_draft.sorted.bam: draft_genome.fasta draft_genome.fasta.bwt raw.reads.n
 reads_to_draft.sorted.bam.bai: reads_to_draft.sorted.bam
 	samtools/samtools index $<
 
+# run nanopolish
 polished_genome.fasta: draft_genome.fasta draft_genome.fasta.fai reads_to_draft.sorted.bam.bai raw.reads.np.fasta
 	python nanopolish/nanopolish_makerange.py draft_genome.fasta | parallel --progress -P $(NP_PROCESS) \
         nanopolish/nanopolish consensus -o nanopolish.{1}.fa -r raw.reads.np.fasta -b reads_to_draft.sorted.bam -g draft_genome.fasta -w {1} -t $(THREADS)

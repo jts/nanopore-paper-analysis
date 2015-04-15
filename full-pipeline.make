@@ -2,7 +2,7 @@ SHELL=/bin/bash -o pipefail
 
 ##################################################
 #
-# Step 0. Preamble to set up the pipeline
+# Step 0. Preamble: set up paths and variable
 #
 ##################################################
 
@@ -132,14 +132,14 @@ FORCE:
 #
 ##################################################
 
-# Export 2D reads tino fasta files using poretools
+# Export 2D reads to fasta files using poretools
 raw.reads.fasta: ERX708228.fast5 ERX708229.fast5 ERX708230.fast5 ERX708231.fast5 pythonlibs.version
 	poretools fasta --type 2D ERX708228.fast5/ > $@
 	poretools fasta --type 2D ERX708229.fast5/ >> $@
 	poretools fasta --type 2D ERX708230.fast5/ >> $@
 	poretools fasta --type 2D ERX708231.fast5/ >> $@
 
-# Run nanocorrect
+# Run nanocorrect in parallel
 %.corrected.fasta: %.fasta samtools.version pythonlibs.version nanocorrect.version daligner.version dazz_db.version
 	make -f nanocorrect/nanocorrect-overlap.make INPUT=$< NAME=$*
 	samtools faidx $<
@@ -175,11 +175,11 @@ draft_genome.fasta: celera-assembly/9-terminator/asm.scf.fasta
 
 ##################################################
 #
-# Step 5. Polish the assembly with nanopolish
+# Step 5. Polish the draft assembly with nanopolish
 #
 ##################################################
 
-# preprocess read names
+# preprocess the fasta file for nanopolish
 raw.reads.np.fasta: raw.reads.fasta nanopolish.version
 	nanopolish/consensus-preprocess.pl $< > $@
 

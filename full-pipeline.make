@@ -17,9 +17,10 @@ CA_LINK=http://downloads.sourceforge.net/project/wgs-assembler/wgs-assembler/wgs
 POA_LINK=http://downloads.sourceforge.net/project/poamsa/poamsa/2.0/poaV2.tar.gz
 
 # Parameters to control execution
-NC_PROCESS=8
-NP_PROCESS=8
+CORES=16
 THREADS=4
+NC_PROCESS=$(CORES)
+NP_PROCESS=$(shell expr $(CORES) / $(THREADS) )
 
 ##################################################
 #

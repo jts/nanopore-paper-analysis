@@ -194,7 +194,7 @@ draft_genome.fasta.fai: draft_genome.fasta
 
 # align reads to draft assembly
 reads_to_draft.sorted.bam: draft_genome.fasta draft_genome.fasta.bwt raw.reads.np.fasta bwa.version samtools.version
-	bwa/bwa mem -t $(THREADS) -x ont2d draft_genome.fasta raw.reads.np.fasta | samtools view -Sb - | samtools sort - $@
+	bwa/bwa mem -t $(THREADS) -x ont2d draft_genome.fasta raw.reads.np.fasta | samtools view -Sb - | samtools sort -f - $@
 
 # index the bam file
 reads_to_draft.sorted.bam.bai: reads_to_draft.sorted.bam

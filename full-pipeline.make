@@ -59,7 +59,7 @@ ERX708231.tar:
 nanocorrect.version:
 	git clone https://github.com/jts/nanocorrect.git
 	ln -s nanocorrect/poa-blosum80.mat
-	-cd nanocorrect; git log | head -1 > ../$@
+	-cd nanocorrect; git checkout 47dcd7f147c; git log | head -1 > ../$@
 
 # Install Python dependencies
 pythonlibs.version:
@@ -110,7 +110,7 @@ samtools.version:
 # Install nanopolish, automatically downloading libhdf5
 nanopolish.version:
 	git clone --recursive https://github.com/jts/nanopolish.git
-	cd nanopolish; make libhdf5.install nanopolish
+	cd nanopolish; git checkout 2c8703edf1f; make libhdf5.install nanopolish
 	-cd nanopolish; git log | head -1 > ../$@
 
 # Install bwa

@@ -164,12 +164,12 @@ assembly.frg: assembly.input.fastq
 	fastqToCA -technology sanger -libraryname assembly -reads $< > $@
 
 # Download the spec file we use
-trimmedends_ovlErrorRate0.06.spec:
-	wget --no-check-certificate https://raw.githubusercontent.com/jts/nanopore-paper-analysis/936e98732c92d7432d369adf079dda1fd436dcab/trimmedends_ovlErrorRate0.06.spec
+revised_ovlErrorRate0.04.spec:
+	wget --no-check-certificate https://raw.githubusercontent.com/jts/nanopore-paper-analysis/c25373d93a99e51c2fedb57d8b08b81826e7c80c/revised_ovlErrorRate0.04.spec
 
 # Run the assembly
 celera-assembly/9-terminator/asm.scf.fasta: trimmedends_ovlErrorRate0.06.spec assembly.frg
-	runCA -d celera-assembly -p asm -s trimmedends_ovlErrorRate0.06.spec assembly.frg
+	runCA -d celera-assembly -p asm -s revised_ovlErrorRate0.04.spec assembly.frg
 
 draft_genome.fasta: celera-assembly/9-terminator/asm.scf.fasta
 	ln -s $< $@

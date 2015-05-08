@@ -99,6 +99,10 @@ ca.version:
 	mv convertFastaAndQualToFastq.jar wgs-8.2/Linux-amd64/bin/
 	echo $(CA_LINK) > $@
 
+lengthsort.version:
+	wget https://raw.githubusercontent.com/jts/nanopore-paper-analysis/master/lengthsort.py
+	echo "lengthsort" > $@
+
 # Install samtools
 samtools.version:
 	git clone --recursive https://github.com/samtools/htslib.git
@@ -134,7 +138,7 @@ FORCE:
 ##################################################
 
 # Export 2D reads to fasta files using poretools
-raw.reads.fasta: ERX708228.fast5/ ERX708229.fast5/ ERX708230.fast5/ ERX708231.fast5/ pythonlibs.version
+raw.reads.fasta: ERX708228.fast5/ ERX708229.fast5/ ERX708230.fast5/ ERX708231.fast5/ pythonlibs.version lengthsort.version
 	poretools fasta --type 2D ERX708228.fast5/ > raw.reads.unsorted
 	poretools fasta --type 2D ERX708229.fast5/ >> raw.reads.unsorted
 	poretools fasta --type 2D ERX708230.fast5/ >> raw.reads.unsorted

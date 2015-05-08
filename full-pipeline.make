@@ -10,7 +10,7 @@ SHELL=/bin/bash -o pipefail
 .DELETE_ON_ERROR:
 
 # The programs we will install must be on the PATH
-export PATH := ./DAZZ_DB:./DALIGNER:./nanocorrect:./poaV2:./wgs-8.2/Linux-amd64/bin/:./samtools/:$(PATH)
+export PATH := ./DAZZ_DB:./DALIGNER:./nanocorrect:./poaV2:./wgs-8.2/Linux-amd64/bin/:./samtools/:./bwa/:$(PATH)
 
 # Download links for programs that are not on github
 CA_LINK=http://downloads.sourceforge.net/project/wgs-assembler/wgs-assembler/wgs-8.2/wgs-8.2-Linux_amd64.tar.bz2
@@ -134,18 +134,19 @@ FORCE:
 ##################################################
 
 # Export 2D reads to fasta files using poretools
-raw.reads.fasta: ERX708228.fast5 ERX708229.fast5 ERX708230.fast5 ERX708231.fast5 pythonlibs.version
-	poretools fasta --type 2D ERX708228.fast5/ > $@
-	poretools fasta --type 2D ERX708229.fast5/ >> $@
-	poretools fasta --type 2D ERX708230.fast5/ >> $@
-	poretools fasta --type 2D ERX708231.fast5/ >> $@
+raw.reads.fasta: ERX708228.fast5/ ERX708229.fast5/ ERX708230.fast5/ ERX708231.fast5/ pythonlibs.version
+	poretools fasta --type 2D ERX708228.fast5/ > raw.reads.unsorted
+	poretools fasta --type 2D ERX708229.fast5/ >> raw.reads.unsorted
+	poretools fasta --type 2D ERX708230.fast5/ >> raw.reads.unsorted
+	poretools fasta --type 2D ERX708231.fast5/ >> raw.reads.unsorted
+	python lengthsort.py < raw.reads.unsorted > $@
 
 # Run nanocorrect in parallel
 %.corrected.fasta: %.fasta samtools.version pythonlibs.version nanocorrect.version daligner.version dazz_db.version poa.version
 	make -f nanocorrect/nanocorrect-overlap.make INPUT=$< NAME=$*
 	samtools faidx $*.pp.fasta
 	python nanocorrect/makerange.py $< | parallel -v --progress -P $(NC_PROCESS) 'python nanocorrect/nanocorrect.py $* {} > $*.{}.corrected.fasta'
-	cat $*.*.corrected.fasta > $@
+	cat $*.*.corrected.fasta | python lengthsort.py > $@
 	#rm $*.*.corrected.fasta
 
 ##################################################
@@ -194,11 +195,11 @@ draft_genome.fasta.fai: draft_genome.fasta
 
 # align reads to draft assembly
 reads_to_draft.sorted.bam: draft_genome.fasta draft_genome.fasta.bwt raw.reads.np.fasta bwa.version samtools.version
-	bwa/bwa mem -t $(THREADS) -x ont2d draft_genome.fasta raw.reads.np.fasta | samtools view -Sb - | samtools sort -f - $@
+	bwa mem -t $(THREADS) -x ont2d draft_genome.fasta raw.reads.np.fasta | samtools view -Sb - | samtools sort -f - $@
 
 # index the bam file
 reads_to_draft.sorted.bam.bai: reads_to_draft.sorted.bam
-	samtools/samtools index $<
+	samtools index $<
 
 # run nanopolish
 polished_genome.fasta: draft_genome.fasta draft_genome.fasta.fai reads_to_draft.sorted.bam.bai raw.reads.np.fasta

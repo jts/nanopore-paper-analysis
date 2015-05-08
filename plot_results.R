@@ -33,9 +33,9 @@ plot_count_correlation <- function(filename) {
     data <- read.table(filename, header=T)
 
     # rename columns to refer to reference and assembly
-    names(data)[names(data) == "reference.fa.gi.556503834.ref.NC_000913.3..fwd"] <- "reference"
-    names(data)[names(data) == "circular.fasta.1.fwd"] <- "draft"
-    names(data)[names(data) == "circular_polished.fa.1.fwd"] <- "polished"
+    names(data)[names(data) == "NC_000913.fna.gi.556503834.ref.NC_000913.3..fwd"] <- "reference"
+    names(data)[names(data) == "circular_draft.fasta.1.rc"] <- "draft"
+    names(data)[names(data) == "circular_polished.fasta.1.rc"] <- "polished"
     print(head(data))
     
     # reorder by reference count descending
@@ -59,25 +59,33 @@ plot_count_correlation <- function(filename) {
           #geom_text(aes(label=kmer_label)) +
           scale_colour_manual(values=c("black", "red"), guide=FALSE) + 
           xlab("5-mer count in reference") + 
-          ylab("5-mer count in draft assembly")
+          ylab("5-mer count in draft assembly") +
+          theme_bw(base_size=13)
     
     # Over represented in reference
     outliers = subset(data, description == "outlier")
 
     md <- melt(outliers[,c('kmer', 'draft', 'reference')], id.vars=1)
-    p2 <- ggplot(md, aes(kmer, value)) + geom_bar(aes(fill=variable), width = w, position = position_dodge(width = w), stat="identity") + ylab("count")
+    p2 <- ggplot(md, aes(kmer, value)) + geom_bar(aes(fill=variable), width = w, position = position_dodge(width = w), stat="identity") + ylab("count") + theme_bw(base_size=13)
    
     p3 <- ggplot(data, aes(reference, polished)) + 
           geom_point(aes(color=description)) +
           #geom_text(aes(label=kmer_label)) +
           scale_colour_manual(values=c("black", "red"), guide=FALSE) + 
           xlab("5-mer count in reference") + 
-          ylab("5-mer count in polished assembly")
+          ylab("5-mer count in polished assembly") + theme_bw(base_size=13)
 
     mp <- melt(outliers[,c('kmer', 'polished', 'reference')], id.vars=1)
-    p4 <- ggplot(mp, aes(kmer, value)) + geom_bar(aes(fill=variable), width = w, position = position_dodge(width = w), stat="identity") + ylab("count")
+    p4 <- ggplot(mp, aes(kmer, value)) + geom_bar(aes(fill=variable), width = w, position = position_dodge(width = w), stat="identity") + ylab("count") + theme_bw(base_size=13)
 
     pdf("figure_kmer_counts.pdf", 16, 16)
     multiplot(p1, p2, p3, p4, cols=2, rows=2)
-    dev.off()   
+    dev.off() 
+    png("figure_kmer_counts.png", 1024, 1024)
+    multiplot(p1, p2, p3, p4, cols=2, rows=2)
+    dev.off()  
 }
+
+args = commandArgs(TRUE)
+plot_count_correlation(args[1])
+

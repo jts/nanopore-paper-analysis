@@ -114,7 +114,7 @@ samtools.version:
 # Install nanopolish, automatically downloading libhdf5
 nanopolish.version:
 	git clone --recursive https://github.com/jts/nanopolish.git
-	cd nanopolish; git checkout 2c8703edf1f; make libhdf5.install nanopolish
+	cd nanopolish; git checkout 6440bfbfcf4fa; make libhdf5.install nanopolish
 	-cd nanopolish; git log | head -1 > ../$@
 
 # Install bwa

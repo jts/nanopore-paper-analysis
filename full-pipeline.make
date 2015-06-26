@@ -150,7 +150,7 @@ raw.reads.fasta: ERX708228.fast5/ ERX708229.fast5/ ERX708230.fast5/ ERX708231.fa
 %.corrected.fasta: %.fasta samtools.version pythonlibs.version nanocorrect.version daligner.version dazz_db.version poa.version
 	make -f nanocorrect/nanocorrect-overlap.make INPUT=$< NAME=$*
 	samtools faidx $*.pp.fasta
-	python nanocorrect/makerange.py $< | parallel -v --progress -P $(NC_PROCESS) 'python nanocorrect/nanocorrect.py $* {} > $*.{}.corrected.fasta'
+	python nanocorrect/makerange.py $< | parallel -v --eta -P $(NC_PROCESS) 'python nanocorrect/nanocorrect.py $* {} > $*.{}.corrected.fasta'
 	cat $*.*.corrected.fasta | python lengthsort.py > $@
 	#rm $*.*.corrected.fasta
 

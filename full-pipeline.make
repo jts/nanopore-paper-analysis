@@ -70,6 +70,7 @@ pythonlibs.version:
 	pip install cython >> $@
 	pip install poretools >> $@
 	pip install biopython >> $@
+	pip freeze >> $@
 
 # Install poa
 poa.version:
